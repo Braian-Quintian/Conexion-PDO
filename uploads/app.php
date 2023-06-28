@@ -7,7 +7,7 @@
     // TABLA academic_area ////////////////////////////////////
     $router->get("/academic_area", function(){
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("SELECT * FROM academic_area");
+        $res = $conexion->con->prepare("SELECT * FROM tb_camper");
         $res->execute();
         $res = ($res->fetchAll(PDO::FETCH_ASSOC));
         echo json_encode($res);
@@ -25,29 +25,41 @@
         $res = $res->rowCount();
         echo json_encode($res);
     });
-
-    $router->delete("/academic_area/{id}", function($id){
+    $router->delete("/academic_area",function (){
+        $_DATA = json_decode(file_get_contents("php://input"),true);
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("DELETE FROM academic_area WHERE id = :ID");
-        $res->bindValue("ID", $id);
+        $res = $conexion->con->prepare("DELETE FROM academic_area  WHERE id=:ID");
+        $res->bindValue("ID",$_DATA["id"]);
+        $res->execute();
+        $res = $res->rowCount();
+        echo json_encode($res);
+    });
+
+    $router->put("/camper", function(){
+        $_DATA = json_decode(file_get_contents("php://input"), true);
+        $conexion = new \App\connect();
+        $res = $conexion->con->prepare("UPDATE academic_area SET nombre = :NOMBRE,edad = :EDAD WHERE id=:CEDULA");
+        $res->bindValue("CEDULA", $_DATA["id"]);
+        $res->bindValue("NOMBRE", $_DATA["name"]);
+        $res->bindValue("EDAD", $_DATA["age"]); 
         $res->execute();
         $res = $res->rowCount();
         echo json_encode($res);
     });
     
-    $router->put("/academic_area/{id}", function($id){
-        $_DATA = json_decode(file_get_contents("php://input"), true);
-        $conexion = new \App\connect();
-        $res = $conexion->con->prepare("UPDATE academic_area SET id_area = :ID_AREA, id_staff = :ID_STAFF, id_position = :ID_POSITION, id_journey = :ID_JOURNEY WHERE id = :ID");
-        $res->bindValue("ID_AREA", $_DATA["id_area"]);
-        $res->bindValue("ID_STAFF", $_DATA["id_staff"]);
-        $res->bindValue("ID_POSITION", $_DATA["id_position"]);
-        $res->bindValue("ID_JOURNEY", $_DATA["id_journey"]);
-        $res->bindValue("ID", $id);
-        $res->execute();
-        $res = $res->rowCount();
-        echo json_encode($res);
-    });
+    // $router->put("/academic_area/{id}", function($id){
+    //     $_DATA = json_decode(file_get_contents("php://input"), true);
+    //     $conexion = new \App\connect();
+    //     $res = $conexion->con->prepare("UPDATE academic_area SET id_area = :ID_AREA, id_staff = :ID_STAFF, id_position = :ID_POSITION, id_journey = :ID_JOURNEY WHERE id = :ID");
+    //     $res->bindValue("ID_AREA", $_DATA["id_area"]);
+    //     $res->bindValue("ID_STAFF", $_DATA["id_staff"]);
+    //     $res->bindValue("ID_POSITION", $_DATA["id_position"]);
+    //     $res->bindValue("ID_JOURNEY", $_DATA["id_journey"]);
+    //     $res->bindValue("ID", $id);
+    //     $res->execute();
+    //     $res = $res->rowCount();
+    //     echo json_encode($res);
+    // });
     
 
 
@@ -73,45 +85,5 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // $router->put("/camper", function(){
-    //     $_DATA = json_decode(file_get_contents("php://input"), true);
-    //     $conexion = new \App\connect();
-    //     $res = $conexion->con->prepare("UPDATE tb_camper SET nombre = :NOMBRE,edad = :EDAD WHERE id=:CEDULA");
-    //     $res->bindValue("CEDULA", $_DATA["id"]);
-    //     $res->bindValue("NOMBRE", $_DATA["name"]);
-    //     $res->bindValue("EDAD", $_DATA["age"]);
-        
-    //     $res->execute();
-    //     $res = $res->rowCount();
-    //     echo json_encode($res);
-    // });
-    // $router->delete("/camper",function (){
-    //     $_DATA = json_decode(file_get_contents("php://input"),true);
-    //     $conexion = new \App\connect();
-    //     $res = $conexion->con->prepare("DELETE FROM tb_camper  WHERE id=:ID");
-    //     $res->bindValue("ID",$_DATA["id"]);
-
-    //     $res->execute();
-    //     $res = $res->rowCount();
-    //     echo json_encode($res);
-    // });
 
     $router->run();

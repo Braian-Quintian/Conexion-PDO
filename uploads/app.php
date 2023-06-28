@@ -1,89 +1,73 @@
 <?php
+    header("Access-Control-Allow-Origin: *");
     require "../vendor/autoload.php";
     $router = new \Bramus\Router\Router();
     $dotenv = Dotenv\Dotenv::createImmutable("../")->load();
-    
 
-    // TABLA academic_area ////////////////////////////////////
-    $router->get("/academic_area", function(){
+    $router->get("/pais", function () {
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("SELECT * FROM tb_camper");
+        $res = $conexion->con->prepare("SELECT * FROM pais");
         $res->execute();
         $res = ($res->fetchAll(PDO::FETCH_ASSOC));
         echo json_encode($res);
     });
-
-    $router->post("/academic_area", function(){
+    
+    $router->post("/pais", function(){
         $_DATA = json_decode(file_get_contents("php://input"), true);
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("INSERT INTO academic_area (id_area,id_staff,id_position,id_journey) VALUES (:ID_AREA,:ID_STAFF,:ID_POSITION,:ID_JOURNEY)");
-        $res->bindValue("ID_AREA", $_DATA["id_area"]);
-        $res->bindValue("ID_STAFF", $_DATA["id_staff"]);
-        $res->bindValue("ID_POSITION", $_DATA["id_position"]);
-        $res->bindValue("ID_JOURNEY", $_DATA["id_journey"]);
-        $res->execute();
-        $res = $res->rowCount();
-        echo json_encode($res);
-    });
-    $router->delete("/academic_area",function (){
-        $_DATA = json_decode(file_get_contents("php://input"),true);
-        $conexion = new \App\connect();
-        $res = $conexion->con->prepare("DELETE FROM academic_area  WHERE id=:ID");
-        $res->bindValue("ID",$_DATA["id"]);
+        $res = $conexion->con->prepare("INSERT INTO pais (nombrePais) VALUES (:NOMBREPAIS)");
+        $res->bindValue("NOMBREPAIS", $_DATA["nombrePais"]);
         $res->execute();
         $res = $res->rowCount();
         echo json_encode($res);
     });
 
-    $router->put("/camper", function(){
+    $router->put("/pais", function () {
         $_DATA = json_decode(file_get_contents("php://input"), true);
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("UPDATE academic_area SET nombre = :NOMBRE,edad = :EDAD WHERE id=:CEDULA");
-        $res->bindValue("CEDULA", $_DATA["id"]);
-        $res->bindValue("NOMBRE", $_DATA["name"]);
-        $res->bindValue("EDAD", $_DATA["age"]); 
+        $res = $conexion->con->prepare("UPDATE pais SET nombrePais = :nombrePais WHERE idPais = :idPais");
+        $res->bindParam(':idPais', $_DATA['idPais']);
+        $res->bindValue("nombrePais", $_DATA["nombrePais"]);
         $res->execute();
         $res = $res->rowCount();
         echo json_encode($res);
     });
     
-    // $router->put("/academic_area/{id}", function($id){
-    //     $_DATA = json_decode(file_get_contents("php://input"), true);
-    //     $conexion = new \App\connect();
-    //     $res = $conexion->con->prepare("UPDATE academic_area SET id_area = :ID_AREA, id_staff = :ID_STAFF, id_position = :ID_POSITION, id_journey = :ID_JOURNEY WHERE id = :ID");
-    //     $res->bindValue("ID_AREA", $_DATA["id_area"]);
-    //     $res->bindValue("ID_STAFF", $_DATA["id_staff"]);
-    //     $res->bindValue("ID_POSITION", $_DATA["id_position"]);
-    //     $res->bindValue("ID_JOURNEY", $_DATA["id_journey"]);
-    //     $res->bindValue("ID", $id);
-    //     $res->execute();
-    //     $res = $res->rowCount();
-    //     echo json_encode($res);
-    // });
-    
 
-
-    $router->get("/areas", function(){
+    $router->delete("/pais", function () {
+        $_DATA = json_decode(file_get_contents("php://input"), true);
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("SELECT * FROM areas");
+        $res = $conexion->con->prepare("DELETE FROM pais WHERE idPais=:idPais");
+        $res->bindValue("idPais", $_DATA["idPais"]);
+        $res->execute();
+        $res = $res->rowCount();
+        echo json_encode($res);
+    });
+
+    $router->get("/departamento", function () {
+        $conexion = new \App\connect();
+        $res = $conexion->con->prepare("SELECT * FROM departamento");
         $res->execute();
         $res = ($res->fetchAll(PDO::FETCH_ASSOC));
         echo json_encode($res);
     });
-
-    $router->post("/areas", function(){
+    $router->post("/departamento", function(){
         $_DATA = json_decode(file_get_contents("php://input"), true);
         $conexion = new \App\connect();
-        $res = $conexion->con->prepare("INSERT INTO areas (name_area) VALUES (:NAME_AREA)");
-        $res->bindValue("NAME_AREA", $_DATA["name_area"]);
+        $res = $conexion->con->prepare("INSERT INTO departamento (nombreDep,idPais) VALUES (:NOMBREDEP,:IDPAIS)");
+        $res->bindValue("NOMBREDEP", $_DATA["nombreDep"]);
+        $res->bindValue("IDPAIS", $_DATA["idPais"]);
         $res->execute();
         $res = $res->rowCount();
         echo json_encode($res);
     });
 
-
-
-
-
+    $router->get("/region", function () {
+        $conexion = new \App\connect();
+        $res = $conexion->con->prepare("SELECT * FROM region");
+        $res->execute();
+        $res = ($res->fetchAll(PDO::FETCH_ASSOC));
+        echo json_encode($res);
+    });
 
     $router->run();
